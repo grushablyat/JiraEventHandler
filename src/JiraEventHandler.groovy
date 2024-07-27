@@ -1,11 +1,18 @@
 String url
+Map<String, Object> params = new LinkedHashMap<>()
 
+//def change = event?.getChangeLog()?.getRelated("ChildChangeItem")?.find { it.field == "status" }
+//
+//Issue issue = event.getIssue()
 //String ikey = event.issue.getKey()
 //long event_type_id = event.getEventTypeId()
-//def change = event?.getChangeLog()?.getRelated("ChildChangeItem")?.find { it.field == "status" }
-//URL = "renewing-dinosaur-generally.ngrok-free.app?ikey=" + ikey
+//
+//params.put("ikey", ikey)
+//params.put("status", issue.status.name)
+//params.put("reporter", issue.reporter.name)
+//
+//url = Config.url + Config.action
 
-Map<String, Object> params = new LinkedHashMap<>()
 params.put("ikey", Config.ikey)
 params.put("status", Config.status)
 params.put("reporter", Config.reporter)
@@ -31,12 +38,9 @@ static String executePost(String targetURL, Map<String, Object> params) {
         connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-//        connection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
 
         connection.setUseCaches(false);
         connection.setDoOutput(true);
-
-//        connection.getOutputStream().write(postDataBytes);
 
         InputStream is = connection.getInputStream();
         BufferedReader rd = new BufferedReader(new InputStreamReader(is));
