@@ -1,25 +1,62 @@
+import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.component.ComponentAccessor
+
 String url
 Map<String, Object> params = new LinkedHashMap<>()
 
-//def change = event?.getChangeLog()?.getRelated("ChildChangeItem")?.find { it.field == "status" }
-//
-//Issue issue = event.getIssue()
-//String ikey = event.issue.getKey()
-//long event_type_id = event.getEventTypeId()
-//
-//params.put("ikey", ikey)
-//params.put("status", issue.status.name)
-//params.put("reporter", issue.reporter.name)
-//
-//url = Config.url + Config.action
+def issue=event.getIssue()
 
-params.put("ikey", Config.ikey)
-params.put("status", Config.status)
-params.put("reporter", Config.reporter)
+def changeItems = ComponentAccessor.getChangeHistoryManager().getAllChangeItems(issue)
+def length = changeItems.size()
 
-url = Config.url + Config.action
+if(changeItems[length-1].getProperties()["field"] == "status"){
+    String ikey = event.issue.getKey()
+    params.put("ikey", ikey)
 
-String result = executePost(url, params)
+    // String status = convertToString(changeItems[length-1].getTos())
+    // params.put("status", status)
+
+    // params.put("status", changeItems[length-1].getProperties().status)
+
+    url = "https://renewing-dinosaur-generally.ngrok-free.app/transition_made"
+    String result = executePost(url, params)
+}
+
+// // def change = event?.getChangeLog()?.getRelated("ChildChangeItem")?.find { it.field == "status" }
+
+// // Issue issue = event.getIssue()
+// String ikey = event.issue.getKey()
+// // String tostring = event.toString()
+// // long event_type_id = event.getEventTypeId()
+
+// params.put("ikey", ikey)
+// // params.put("status" actionName)
+// // params.put("tostring", event.toString())
+// // params.put("status", issue.getStatus().name)
+// // params.put("reporter", issue.reporter.name)
+
+// // StatusEditedEvent statusEditedEvent = (StatusEditedEvent)event
+
+// // String status = statusEditedEvent.getOriginalStatus().name
+
+// // params.put("status", status)
+
+// url = "https://renewing-dinosaur-generally.ngrok-free.app/transition_made"
+
+// String result = executePost(url, params)
+
+static String convertToString(Map<?, ?> map) {
+    if (map.isEmpty) {
+        return "NONE"
+    }
+
+    StringBuilder mapAsString = new StringBuilder("{");
+    for (var key : map.keySet()) {
+        mapAsString.append("" + key + "=" + map.get(key) + ", ");
+    }
+    mapAsString.delete(mapAsString.length()-2, mapAsString.length()).append("}");
+    return mapAsString.toString();
+}
 
 static String executePost(String targetURL, Map<String, Object> params) {
 
